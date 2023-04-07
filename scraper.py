@@ -1,20 +1,28 @@
 import csv
 import time
+import os
+import argparse
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-import argparse
+
+# Create the output folder if it doesn't exist
+if not os.path.exists('output'):
+    os.makedirs('output')
 
 parser = argparse.ArgumentParser(description='Scrape businesses from Google Maps')
-parser.add_argument('industry', help='Industry to search for')
-parser.add_argument('city', help='City to search in')
+parser.add_argument('--business_type' , '-bt', '-business_type','--bt')
+parser.add_argument('--location', '-l', '-location', '--l')
+
 args = parser.parse_args()
 
-industry = args.industry
-city = args.city
+business_type = args.business_type
+location = args.location
+
+print(f"Searching for {business_type} in {location}")
 
 # Initialize Chrome driver
 driver = webdriver.Chrome()
@@ -28,7 +36,7 @@ search_box = WebDriverWait(driver, 10).until(
 )
 
 # Type the search query and press Enter
-search_query = f'{industry} in {city}'
+search_query = f'{business_type} in {location}'
 search_box.send_keys(search_query)
 search_box.send_keys(Keys.RETURN)
 
@@ -92,11 +100,12 @@ for url in urls:
 # Close the driver
 driver.quit()
 
-csv_filename = f'{city}.csv'
+csv_filename = f'output/{location}.csv'
 # Write the output to a CSV file
 with open(csv_filename, 'w', newline='', encoding='utf-8') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(['Name', 'Phone'])
     writer.writerows(output)
 
+print(f'Successfully scraped {len(output)} businesses.')
 print("Scraping completed.")
