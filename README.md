@@ -21,7 +21,7 @@ The Google Maps Scraper is a Python web scraper that extracts business names and
   4. Wait for the scraper to finish. The output file will be saved in CSV format in the output/ folder.
   
 
-##Output
+## Output
 The scraper outputs a CSV file with two columns: "Business Name" and "Phone Number". Each row corresponds to a business that matches the input parameters.
   
 ## Limitations
