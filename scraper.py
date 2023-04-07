@@ -31,29 +31,55 @@ driver = webdriver.Chrome()
 driver.get('https://www.google.com/maps')
 
 # Wait for the search box to load
-search_box = WebDriverWait(driver, 10).until(
-    EC.presence_of_element_located((By.ID, 'searchboxinput'))
-)
+try:
+    search_box = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, 'searchboxinput'))
+    )
 
-# Type the search query and press Enter
-search_query = f'{business_type} in {location}'
-search_box.send_keys(search_query)
-search_box.send_keys(Keys.RETURN)
+    # Type the search query and press Enter
+    search_query = f'{business_type} in {location}'
+    search_box.send_keys(search_query)
+    search_box.send_keys(Keys.RETURN)
 
-# Wait for the search results to load
-WebDriverWait(driver, 10).until(
-    EC.presence_of_element_located((By.CLASS_NAME, 'hfpxzc'))
-)
-    
+    # Wait for the search results to load
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, 'hfpxzc'))
+    )
+except:
+    # If an exception occurs, retry the code block after a short delay
+    time.sleep(5)
+    try:
+        search_box = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, 'searchboxinput'))
+        )
+
+        search_query = f'{business_type} in {location}'
+        search_box.send_keys(search_query)
+        search_box.send_keys(Keys.RETURN)
+
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, 'hfpxzc'))
+        )
+    except:
+        # If the problem persists, print an error message and exit the script
+        print("Error: Failed to load search results")
+        driver.quit()
+        exit()
+
+# Google maps and results are successfully loaded    
 # Initialize the output list
 output = []
 urls = []
 
 while True:
-    # Find all the businesses in the search results
-    businesses = WebDriverWait(driver, 10).until(
-        EC.presence_of_all_elements_located((By.CLASS_NAME, 'hfpxzc'))
-    )
+    try:
+        # Find all the businesses in the search results
+        businesses = WebDriverWait(driver, 10).until(
+            EC.presence_of_all_elements_located((By.CLASS_NAME, 'hfpxzc'))
+        )
+    except:
+        # If no businesses are found, break the loop
+        break
 
     time.sleep(2)
 
@@ -67,11 +93,16 @@ while True:
     driver.execute_script("arguments[0].scrollIntoView();", businesses[-1])
     time.sleep(2)
 
-    # Break the loop if no new businesses are loaded
-    new_businesses = WebDriverWait(driver, 10).until(
-        EC.presence_of_all_elements_located((By.CLASS_NAME, 'hfpxzc'))
-    )
-    if len(new_businesses) == len(businesses):
+    try:
+        # Check if new businesses are loaded
+        new_businesses = WebDriverWait(driver, 10).until(
+            EC.presence_of_all_elements_located((By.CLASS_NAME, 'hfpxzc'))
+        )
+        if len(new_businesses) == len(businesses):
+            # If no new businesses are loaded, break the loop
+            break
+    except:
+        # If an exception occurs, break the loop
         break
 
 
