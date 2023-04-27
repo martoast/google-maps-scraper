@@ -118,15 +118,27 @@ for url in urls:
         name = ""
 
     try:
+        url = WebDriverWait(driver, 2).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "[data-item-id*='authority']"))
+        ).text
+    except Exception as e:
+        url = ""
+
+    try:
         phone = WebDriverWait(driver, 2).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "[data-item-id*='phone:']"))
         ).text
     except Exception as e:
         phone = ""
         
-    if name and phone:
-        print(name, phone)
+    if name and phone and url:
+        print(name, phone, url)
+        output.append((name, phone, url))
+    elif name and phone:
         output.append((name, phone))
+    else:
+        print("no name or phone found for: ", name )
+
 
 # Close the driver
 driver.quit()
@@ -135,7 +147,7 @@ csv_filename = f'output/{location}.csv'
 # Write the output to a CSV file
 with open(csv_filename, 'w', newline='', encoding='utf-8') as csvfile:
     writer = csv.writer(csvfile)
-    writer.writerow(['Name', 'Phone'])
+    writer.writerow(['Name', 'Phone', 'Url'])
     writer.writerows(output)
 
 print(f'Successfully scraped {len(output)} businesses.')
