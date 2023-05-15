@@ -14,13 +14,16 @@ if not os.path.exists('output'):
     os.makedirs('output')
 
 parser = argparse.ArgumentParser(description='Scrape businesses from Google Maps')
-parser.add_argument('--business_type' , '-bt', '-business_type','--bt')
-parser.add_argument('--location', '-l', '-location', '--l')
+parser.add_argument('--business_type' , '-bt', '-business_type','--bt', type=str, nargs="+")
+parser.add_argument('--location', '-l', '-location', '--l', type=str, nargs="+")
 
 args = parser.parse_args()
 
-business_type = args.business_type
-location = args.location
+location_args = args.location
+location = " ".join(location_args)
+
+business_type_args = args.business_type
+business_type = " ".join(business_type_args)
 
 print(f"Searching for {business_type} in {location}")
 
@@ -37,7 +40,7 @@ try:
     )
 
     # Type the search query and press Enter
-    search_query = f'{business_type} in {location}'
+    search_query = f'{business_type} en {location}'
     search_box.send_keys(search_query)
     search_box.send_keys(Keys.RETURN)
 
