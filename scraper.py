@@ -25,6 +25,7 @@ location = " ".join(location_args)
 business_type_args = args.business_type
 business_type = " ".join(business_type_args)
 
+
 print(f"Searching for {business_type} in {location}")
 
 # Initialize Chrome driver
@@ -113,30 +114,34 @@ while True:
 for url in urls:
     driver.get(url)
 
+    # time.sleep(2)
     try:
-        name = WebDriverWait(driver, 2).until(
-            EC.presence_of_element_located((By.CLASS_NAME, 'fontHeadlineLarge'))
-        ).text
+        name = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "h1.DUwDvf.lfPIob"))
+     ).text
+
     except Exception as e:
         name = ""
 
     try:
-        url = WebDriverWait(driver, 2).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "[data-item-id*='authority']"))
-        ).text
+     website = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "a[data-item-id='authority']"))
+        ).get_attribute('href')
+     print(website)
     except Exception as e:
-        url = ""
+     website = ""
 
     try:
-        phone = WebDriverWait(driver, 2).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "[data-item-id*='phone:']"))
+        phone = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "button[data-item-id^='phone'] .Io6YTe.fontBodyMedium.kR99db"))
         ).text
+
     except Exception as e:
-        phone = ""
+     phone = ""
         
-    if name and phone and url:
-        print(name, phone, url)
-        output.append((name, phone, url))
+    if name and phone and website:
+        # print(name, phone, url)
+         output.append((name, phone, website))
     elif name and phone:
         output.append((name, phone))
     else:
